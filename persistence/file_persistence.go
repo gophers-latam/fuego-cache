@@ -64,8 +64,6 @@ func updateValue(bytes []byte, k int, value, fileLocation string) ([]string, err
 		if k == hashedKey {
 			found = true
 			entries = append(entries, fmt.Sprintf("%d,%s"+intro, k, value))
-		} else if hashedKey != 0 {
-			//entries = append(entries, fmt.Sprintf("%d,%d"+intro, hashedKey, kv[1]))
 		}
 	}
 
