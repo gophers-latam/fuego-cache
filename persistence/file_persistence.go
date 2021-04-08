@@ -129,7 +129,7 @@ func parseBytes(bytes []byte) []string {
 
 func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed bool) (string, error) {
 	pairs := parseBytes(bytes)
-
+	// inverted array for get the last item in search
 	for i, j := 0, len(pairs)-1; i < j; i, j = i+1, j-1 {
 		pairs[i], pairs[j] = pairs[j], pairs[i]
 	}
