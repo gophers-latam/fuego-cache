@@ -3,14 +3,15 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	"github.com/tomiok/fuego-cache/internal"
-	"github.com/tomiok/fuego-cache/logs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tomiok/fuego-cache/internal"
+	"github.com/tomiok/fuego-cache/logs"
 )
 
 type Persist interface {
@@ -62,9 +63,7 @@ func updateValue(bytes []byte, k int, value, fileLocation string) ([]string, err
 
 		if k == hashedKey {
 			found = true
-			entries = append(entries, fmt.Sprintf("%d,%s", k, value))
-		} else {
-			entries = append(entries, fmt.Sprintf("%d,%s", hashedKey, kv[1]))
+			entries = append(entries, fmt.Sprintf("%d,%s"+intro, k, value))
 		}
 	}
 
@@ -77,13 +76,18 @@ func updateValue(bytes []byte, k int, value, fileLocation string) ([]string, err
 
 func (f *FilePersistence) Update(k int, value string) {
 	bytes, err := ioutil.ReadFile(f.File)
+	file, _ := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePermission)
 
 	if err != nil {
 		logs.Error("cannot update the value " + err.Error())
 		return
 	}
 
-	updateValue(bytes, k, value, f.File)
+	res, err := updateValue(bytes, k, value, f.File)
+
+	for _, kv := range res {
+		file.WriteString(kv)
+	}
 }
 
 func (f *FilePersistence) Save(k int, value string) {
@@ -125,6 +129,13 @@ func parseBytes(bytes []byte) []string {
 
 func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed bool) (string, error) {
 	pairs := parseBytes(bytes)
+	// inverted array for get the last item in search
+	for i, j := 0, len(pairs)-1; i < j; i, j = i+1, j-1 {
+		pairs[i], pairs[j] = pairs[j], pairs[i]
+	}
+
+	x, pairs := pairs[0], pairs[1:]
+	pairs = append(pairs, x)
 
 	for _, kv := range pairs {
 		values := strings.Split(kv, comma)

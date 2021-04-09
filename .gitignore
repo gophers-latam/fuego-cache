@@ -17,3 +17,7 @@ fuego-cache
 # vendor/
 
 .idea
+
+.vscode/
+
+persistence/test.csv
