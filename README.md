@@ -18,8 +18,20 @@ No further installation needed, just `go get github.com/tomiok/fuego-cache`
 `make run`
 
 ### Docker
-SID
+#### Build CLI
+`make docker-build-cli`
 
+#### Build HTTP
+`make docker-build-http`
+
+#### Run CLI Mode
+make docker-run-cli
+
+#### Run HTTP Mode
+make docker-run-http
+
+**_NOTE:_**
+Since configuration changes from a json file you need to build different images based on your configuration 
 
 ### TEST
 this is a test
